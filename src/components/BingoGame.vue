@@ -8,7 +8,7 @@
         </v-col>
       </v-row>
       <v-row align="center" justify="center">
-        <v-btn @click="startGeneration">Iniciar jogo</v-btn>
+        <v-btn @click="startGeneration" class="bg-green">Iniciar jogo</v-btn>
       </v-row>
       <v-row class="mt-3">
         <v-col>
@@ -90,7 +90,7 @@ export default defineComponent({
     const startGeneration = () => {
       if (!generationInterval.value) {
         drawNumber();
-        generationInterval.value = window.setInterval(drawNumber, 2000);
+        generationInterval.value = window.setInterval(drawNumber, 8000);
       }
     };
 
