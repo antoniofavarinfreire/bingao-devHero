@@ -9,7 +9,6 @@
       </v-row>
       <v-row align="center" justify="center">
         <v-btn @click="startGeneration">Iniciar jogo</v-btn>
-        <v-btn @click="resetGame">Zerar jogo</v-btn>
       </v-row>
       <v-row class="mt-3">
         <v-col>
@@ -102,17 +101,6 @@ export default defineComponent({
       }
     };
 
-    const resetGame = async () => {
-      stopGeneration();
-      await resetDbGame();
-      const { playerNumbers, machineNumbers } = generateUniqueBoards();
-      playerBoard.value = playerNumbers;
-      machineBoard.value = machineNumbers;
-      highlightedNumbers.value = [];
-      playerHighlightedNumbers.value = [];
-      machineHighlightedNumbers.value = [];
-      drawnNumber.value = null;
-    };
 
     const checkWinners = () => {
       if (checkForWin(playerBoard.value, playerHighlightedNumbers.value)) {
@@ -138,7 +126,6 @@ export default defineComponent({
       drawNumber,
       startGeneration,
       stopGeneration,
-      resetGame,
     };
   },
 });
