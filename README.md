@@ -15,6 +15,16 @@ Este é um projeto de jogo de bingo desenvolvido com Vue.js, TypeScript e Vuetif
 - **TypeScript:** Um superconjunto de JavaScript que adiciona tipagem estática ao idioma.
 - **Vuetify:** Framework de componentes de interface do usuário baseado no Material Design para Vue.js.
 
+## Instação
+### Vue CLI
+```
+npm install -g @vue/cli
+```
+
+### Iniciar o servidor de desenvolvimento
+```
+npm run serve
+
 ## Estrutura do Projeto
 
 ```plaintext
