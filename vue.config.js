@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-
+  publicPath: '/bingao-devHero',
   pwa: {
     name: 'Bingo Game',
     themeColor: '#4DBA87',
@@ -18,8 +18,6 @@ module.exports = defineConfig({
       clientsClaim: true,
     },
   },
-
-  base: './',
 
   pluginOptions: {
     vuetify: {
