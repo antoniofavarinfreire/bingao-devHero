@@ -19,6 +19,8 @@ module.exports = defineConfig({
     },
   },
 
+  base: './',
+
   pluginOptions: {
     vuetify: {
 			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
