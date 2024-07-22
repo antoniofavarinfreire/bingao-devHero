@@ -1,18 +1,27 @@
 <template>
   <v-container>
-    <h1>Jogo de Bingo</h1>
-    <h2>Números Chamados</h2>
-    <CalledNumbersBoard :highlightedNumbers="highlightedNumbers"/>
-    <v-btn @click="drawNumber">Sortear Número</v-btn>
-    <v-btn @click="startGeneration">Iniciar Geração</v-btn>
-    <v-btn @click="stopGeneration">Parar Geração</v-btn>
-    <v-btn @click="saveGameState">Salvar Estado</v-btn>
-    <v-btn @click="loadGameState">Carregar Estado</v-btn>
-    <h3>Número Sorteado: {{ drawnNumber }}</h3>
-    <h2>Jogador</h2>
-    <BingoBoard :numbers="playerBoard" v-model:highlightedNumbers="playerHighlightedNumbers"/>
-    <h2>Máquina</h2>
-    <BingoBoard :numbers="machineBoard" v-model:highlightedNumbers="machineHighlightedNumbers"/>
+    <v-col>
+      <v-row>
+        <v-col>
+          <h1>Jogo de Bingo</h1>
+          <CalledNumbersBoard :highlightedNumbers="highlightedNumbers" :drawnNumber="drawnNumber"/>
+        </v-col>
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-btn @click="startGeneration">Iniciar jogo</v-btn>
+        <v-btn @click="resetGame">Zerar jogo</v-btn>
+      </v-row>
+      <v-row class="mt-3">
+        <v-col>
+          <h2 class="text-center">Jogador</h2>
+          <BingoBoard :numbers="playerBoard" v-model:highlightedNumbers="playerHighlightedNumbers"/>
+        </v-col>
+        <v-col>
+          <h2 class="text-center">Máquina</h2>
+          <BingoBoard :numbers="machineBoard" v-model:highlightedNumbers="machineHighlightedNumbers" :disable="true"/>
+        </v-col>
+      </v-row>
+    </v-col>
   </v-container>
 </template>
 
@@ -20,7 +29,7 @@
 import { defineComponent, ref, watch, onMounted } from 'vue';
 import BingoBoard from './BingoBoard.vue';
 import CalledNumbersBoard from './CalledNumbersBoard.vue';
-import { saveState, getState } from '../db';
+import { saveState, getState, resetGame as resetDbGame } from '../db';
 
 export default defineComponent({
   name: 'BingoGame',
@@ -56,6 +65,15 @@ export default defineComponent({
     const drawnNumber = ref<number | null>(null);
     const generationInterval = ref<number | null>(null);
 
+    const checkForWin = (board: number[], highlighted: number[]) => {
+      const rows = Array(5).fill(0).map((_, i) => board.slice(i * 5, i * 5 + 5));
+
+      const hasWinningLine = (lines: number[][]) => 
+        lines.some(line => line.every(num => highlighted.includes(num)));
+
+      return hasWinningLine(rows);
+    };
+
     const drawNumber = () => {
       const availableNumbers = Array.from({ length: 75 }, (_, i) => i + 1).filter(num => !highlightedNumbers.value.includes(num));
       if (availableNumbers.length === 0) return;
@@ -66,11 +84,14 @@ export default defineComponent({
       if (machineBoard.value.includes(drawnNumber.value) && !machineHighlightedNumbers.value.includes(drawnNumber.value)) {
         machineHighlightedNumbers.value.push(drawnNumber.value);
       }
+
+      checkWinners();
     };
 
     const startGeneration = () => {
       if (!generationInterval.value) {
-        generationInterval.value = window.setInterval(drawNumber, 3000);
+        drawNumber();
+        generationInterval.value = window.setInterval(drawNumber, 2000);
       }
     };
 
@@ -81,45 +102,31 @@ export default defineComponent({
       }
     };
 
-    const saveGameState = async () => {
-      const state = {
-        playerBoard: [...playerBoard.value],
-        machineBoard: [...machineBoard.value],
-        highlightedNumbers: [...highlightedNumbers.value],
-        playerHighlightedNumbers: [...playerHighlightedNumbers.value],
-        machineHighlightedNumbers: [...machineHighlightedNumbers.value],
-        drawnNumber: drawnNumber.value,
-      };
-      await saveState(state);
-      alert('Estado salvo com sucesso!');
+    const resetGame = async () => {
+      stopGeneration();
+      await resetDbGame();
+      const { playerNumbers, machineNumbers } = generateUniqueBoards();
+      playerBoard.value = playerNumbers;
+      machineBoard.value = machineNumbers;
+      highlightedNumbers.value = [];
+      playerHighlightedNumbers.value = [];
+      machineHighlightedNumbers.value = [];
+      drawnNumber.value = null;
     };
 
-    const loadGameState = async () => {
-      const state = await getState();
-      if (state) {
-        playerBoard.value = state.playerBoard;
-        machineBoard.value = state.machineBoard;
-        highlightedNumbers.value = state.highlightedNumbers;
-        playerHighlightedNumbers.value = state.playerHighlightedNumbers;
-        machineHighlightedNumbers.value = state.machineHighlightedNumbers;
-        drawnNumber.value = state.drawnNumber;
-        alert('Estado carregado com sucesso!');
-      } else {
-        alert('Nenhum estado salvo encontrado.');
+    const checkWinners = () => {
+      if (checkForWin(playerBoard.value, playerHighlightedNumbers.value)) {
+        alert('Jogador ganhou!');
+        stopGeneration();
+      } else if (checkForWin(machineBoard.value, machineHighlightedNumbers.value)) {
+        alert('Máquina ganhou!');
+        stopGeneration();
       }
     };
 
-    onMounted(async () => {
-      await loadGameState();
-    });
-
-    watch(highlightedNumbers, (newNumbers) => {
-      newNumbers.forEach(number => {
-        if (machineBoard.value.includes(number) && !machineHighlightedNumbers.value.includes(number)) {
-          machineHighlightedNumbers.value.push(number);
-        }
-      });
-    });
+    // Verifica se há um vencedor quando o número destacado muda
+    watch(playerHighlightedNumbers, () => checkWinners());
+    watch(machineHighlightedNumbers, () => checkWinners());
 
     return {
       playerBoard,
@@ -131,8 +138,7 @@ export default defineComponent({
       drawNumber,
       startGeneration,
       stopGeneration,
-      saveGameState,
-      loadGameState,
+      resetGame,
     };
   },
 });

@@ -18,3 +18,9 @@ export const getState = async () => {
   const db = await dbPromise;
   return await db.get('state', 1);
 };
+
+export const resetGame = async () => {
+  const db = await dbPromise;
+  await db.delete('gameState', 1);
+  // Gere novos dados para os tabuleiros e números
+};

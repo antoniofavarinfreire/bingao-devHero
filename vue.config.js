@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
+
   pwa: {
     name: 'Bingo Game',
     themeColor: '#4DBA87',
@@ -17,4 +18,10 @@ module.exports = defineConfig({
       clientsClaim: true,
     },
   },
+
+  pluginOptions: {
+    vuetify: {
+			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
+		}
+  }
 })
