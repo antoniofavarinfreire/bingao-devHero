@@ -1,4 +1,4 @@
-# Bingo mania
+# Bingo Game
 
 Este é um projeto de jogo de bingo desenvolvido com Vue.js, TypeScript e Vuetify. O jogo consiste em duas cartelas, uma para o jogador e outra para a máquina. As bolas são chamadas aleatoriamente e a cartela da máquina é marcada automaticamente, enquanto o jogador deve marcar suas bolas manualmente.
 
