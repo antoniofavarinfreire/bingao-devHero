@@ -10,12 +10,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      base: ".",
       manifest: {
         name: 'Bingo Mania',
         short_name: 'Bingo Mania',
         description: 'Jogo de Bingo com tabelas para o jogador e a máquina',
         theme_color: '#ffffff',
+        start_url: ".",
         icons: [
           {
             "src": "/android-chrome-192x192.png",
