@@ -10,6 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      base: "./dist",
       manifest: {
         name: 'Bingo Mania',
         short_name: 'Bingo Mania',
