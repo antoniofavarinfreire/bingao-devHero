@@ -1,26 +1,47 @@
-import { openDB } from 'idb';
+import Dexie , {type EntityTable } from 'dexie';
 
-const dbPromise = openDB('bingo-game', 1, {
-  upgrade(db) {
-    db.createObjectStore('state', {
-      keyPath: 'id',
-      autoIncrement: true,
-    });
-  },
+interface Player {
+  id: number;
+  b: string;
+  i: string;
+  n: string;
+  g: string;
+  o: string;
+  // highlightedNumbers: string;
+}
+
+interface Machine {
+  id: number;
+  b: string;
+  i: string;
+  n: string;
+  g: string;
+  o: string;
+  // highlightedNumbers: string;
+}
+
+// interface Board {
+//   id: number;
+//   highlightedNumbers: string;
+// }
+
+const db = new Dexie('BingoDatabase') as Dexie & {
+  player: EntityTable<
+    Player,
+    'id'
+  >;
+  machine: EntityTable<
+    Machine,
+    'id'
+  >;
+};
+
+db.version(1).stores({
+  player: '++id, b, i, n, g, o',
+  machine: '++id, b, i, n, g, o',
 });
 
-export const saveState = async (state: any) => {
-  const db = await dbPromise;
-  await db.put('state', { id: 1, ...state });
-};
+const playerTable = db.table<Player, number>('player');
 
-export const getState = async () => {
-  const db = await dbPromise;
-  return await db.get('state', 1);
-};
-
-export const resetGame = async () => {
-  const db = await dbPromise;
-  await db.delete('gameState', 1);
-  // Gere novos dados para os tabuleiros e números
-};
+export type { Player, Machine };
+export { db, playerTable };

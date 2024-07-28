@@ -1,18 +1,9 @@
-<template>
-  <BingoGame />
-</template>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-// Components
-
+<script setup lang="ts">
 import BingoGame from '../components/BingoGame.vue'
-export default defineComponent({
-  name: 'HomeView',
-
-  components: {
-    BingoGame,
-  },
-});
 </script>
+
+<template>
+  <main>
+    <BingoGame />
+  </main>
+</template>
